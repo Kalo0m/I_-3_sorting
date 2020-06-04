@@ -48,8 +48,7 @@ export default {
 
       const tmp = items[index];
       items[index] = items[i];
-      items[i] = tmp;
-
+      items[i] = tmp; 
       this.array = [...items];
 
       setTimeout(() => this.processItems(items, i + 1), 100);

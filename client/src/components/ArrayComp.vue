@@ -1,23 +1,10 @@
 <template>
+  <div class="container">
   <div class="content">
-    <v-stage :config="{
-      width : this.width,
-      height : this.width
-    }">
-      <v-layer>
-        <div v-for="(elem, index) in arrayComputed" :key='index' class = "oneRect">
-        <v-rect  :config="{
-          x: elem.x,
-          y: elem.y,
-          width: elem.width,
-          height: elem.height,
-          fill: 'grey',
-        }"
-      /></div>
-      </v-layer>
-    </v-stage>
-    
-    {{array}}
+
+          <div v-for="(elem, index) in arrayComputed" :key='index' class="arrayElement" v-bind:style="{ height: elem.height +'px', width: '15px', marginLeft: elem.width+'px', backgroundColor: 'rgba(169, 92, 232, 0.8)', color: 'transparent', fontSize: '8px'}">10</div>
+      
+  </div>
   </div>
 </template>
 
@@ -39,7 +26,7 @@ export default {
         return {
           x: index * (config.widthArray / this.array.length),
           y: 0,
-          width: config.widthArray / this.array.length - 2,
+          width: config.widthArray / this.array.length - 1,
           height: (item / Math.max(...this.array)) * config.heightArray,
           value: item
         };
