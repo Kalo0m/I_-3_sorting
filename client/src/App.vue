@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <NavBar v-on:lengthChange="changeArrayLength" v-on:algo="algo" />
-    <ArrayComp v-bind:array="this.array" />
+    <NavBar @lengthChange="generateRandomArray" @algo="algo" />
+    <ArrayComp :array="array" />
   </div>
 </template>
 
@@ -11,76 +11,59 @@ import ArrayComp from "./components/ArrayComp.vue";
 
 export default {
   name: "App",
-  data: function() {
+
+  data() {
     return {
-      array: []
+      array: [],
+      running: false
     };
   },
-  mounted: function() {
-    this.array = Array.from({ length: 55 }, () =>
-      Math.floor(Math.random() * 100)
-    );
+
+  mounted() {
+    this.generateRandomArray(55);
   },
-  
+
   methods: {
-    changeArrayLength: function(event) {
-      this.createRandomArray(event, 100);
+    createRandomArray(length, max = 100) {
+      return Array.from({ length }, () => Math.floor(Math.random() * max));
     },
-    processItem: function(array2, i) {
-      return new Promise((resolve) => {
-        var index = i;
-        for (var j = i + 1; j < array2.length; j++) {
-          if (array2[j] < array2[index]) {
-            index = j;
-          }
+
+    generateRandomArray(length) {
+      this.array = this.createRandomArray(length)
+    },
+
+    processItems(items, i) {
+      if (items.length - 1 === i) {
+        console.log("End running...");
+        return this.running = false;
+      }
+
+      let index = i;
+
+      for (let j = i + 1; j < items.length; j++) {
+        if (items[j] < items[index]) {
+          index = j;
         }
-        const tmp = array2[index];
-        array2[index] = array2[i];
-        array2[i] = tmp;
-        setTimeout(() => resolve(array2), 1000);
-      });
+      }
+
+      const tmp = items[index];
+      items[index] = items[i];
+      items[i] = tmp;
+
+      this.array = [...items];
+
+      setTimeout(() => this.processItems(items, i + 1), 100);
     },
 
-    algo: async function() {
-      const array2 = [...this.array];
-
-      console.log("debut algo", { array2 });
-
-      for (var i = 0; i < array2.length; i++) {
-        const result = await this.processItem(array2, i);
-        console.log(result)
-        this.array = result
+    algo() {
+      if (this.running) {
+        return console.warn('Already running...');
       }
-    } /*
-    algo : async function(){
-      console.log('debut algo');
-      const array2 = [...this.array];
-      console.log(array2)
 
-      for(var i =0;i<array2.length;i++){
-
-            var index = i;
-            for(var j = i+1;j<array2.length;j++){
-              if(array2[j]<array2[index]){
-                index = j;
-              }
-            }
-            
-            const tmp = array2[index];
-            array2[index] = array2[i];
-            array2[i] = tmp;
-            this.array = array2;
-            console.log(this.array)
-            await new Promise(resolve => setTimeout(resolve, 100));
-
-      }
-      console.log(array2);
-    },*/,
-    createRandomArray: function(nbElement, max) {
-      this.array = Array.from({ length: nbElement }, () =>
-        Math.floor(Math.random() * max)
-      );
-    }
+      this.running = true;
+      console.log("Start running...");
+      this.processItems(this.array, 0);
+    },
   },
 
   components: {
